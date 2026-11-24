@@ -1,7 +1,7 @@
 import {pathToFileURL} from 'node:url';
 
 export async function runLane({base, key, lane, runId = 'manual', deadline = Date.now() + 45 * 60_000, request = fetch, wait = ms => new Promise(resolve => setTimeout(resolve, ms)), log = console.log}) {
-  if (new URL(base).origin !== 'https://hokko.evgenygoryachkin.chatgpt.site') throw Error('Unexpected Site origin');
+  if (new URL(base).origin !== 'https://hokko.goryachkinstudio.chatgpt.site') throw Error('Unexpected Site origin');
   if (!key || key.length < 32) throw Error('Refresh service key is missing');
   let errors = 0;
   while (Date.now() < deadline) {
@@ -55,6 +55,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   const options = await input();
   const lanes = options.lanes || ['mhl', 'youth', 'careers', 'archive'];
   if (lanes.some(lane => !['mhl', 'youth', 'careers', 'archive'].includes(lane))) throw Error('Unknown collection lane');
-  const results = await Promise.allSettled(lanes.map(lane => runLane({...options, base: 'https://hokko.evgenygoryachkin.chatgpt.site', lane})));
+  const results = await Promise.allSettled(lanes.map(lane => runLane({...options, base: 'https://hokko.goryachkinstudio.chatgpt.site', lane})));
   for (let i = 0; i < results.length; i++) if (results[i].status === 'rejected') { console.error(JSON.stringify({lane: lanes[i], status: 'failed', error: String(results[i].reason.message).replaceAll(options.key || 'no-key', '[redacted]')})); process.exitCode = 1; }
 }
