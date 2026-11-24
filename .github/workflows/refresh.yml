@@ -1,16 +1,21 @@
 name: Refresh Hokko
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '17 * * * *'
     - cron: '23 6 1 * *'
   workflow_dispatch:
 permissions:
   contents: read
-concurrency:
-  group: hokko-statistics-refresh
-  cancel-in-progress: false
 jobs:
   refresh:
+    name: Update ${{ matrix.lane }}
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [mhl, youth, careers, archive]
+    concurrency:
+      group: hokko-refresh-${{ matrix.lane }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 50
     steps:
@@ -19,6 +24,7 @@ jobs:
         run: node run-http-refresh.mjs
         env:
           HOKKO_REFRESH_SERVICE_KEY: ${{ secrets.HOKKO_REFRESH_SERVICE_KEY }}
+          HOKKO_LANES: ${{ matrix.lane }}
   keep-schedule-active:
     if: github.event_name == 'workflow_dispatch' || github.event.schedule == '23 6 1 * *'
     runs-on: ubuntu-latest
